@@ -1,4 +1,80 @@
 {
-  "ultima_atualizacao": "",
-  "itens": []
+  "ultima_atualizacao": "2026-11-25T11:57:00-03:00",
+  "itens": [
+    {
+      "id": "univasf-sabado-saudavel-v",
+      "titulo": "V Edição do Sábado Saudável",
+      "instituicao": "UNIVASF",
+      "rede": "Pública",
+      "categoria": "Eventos",
+      "data": "2026-11-25",
+      "prazo": "Inscrições no local ou prévia",
+      "local": "Petrolina - PE",
+      "beneficio": "Gratuito",
+      "requisitos": "Estudantes universitários e comunidade em geral",
+      "link": "https://portais.univasf.edu.br/noticias/v-edicao-do-sabado-saudavel-sera-realizada-neste-sabado-3-com-atividades-para-a-comunidade",
+      "descricao": "Ação de extensão da UNIVASF voltada para promoção da saúde, bem-estar e integração acadêmica com a comunidade.",
+      "fonte": "UNIVASF"
+    },
+    {
+      "id": "upe-semana-universitaria-2026",
+      "titulo": "Semana Universitária UPE 2026",
+      "instituicao": "UPE Petrolina",
+      "rede": "Pública",
+      "categoria": "Simpósios",
+      "data": "2026-11-25",
+      "prazo": "Inscrições abertas",
+      "local": "Petrolina - PE",
+      "beneficio": "Certificado",
+      "requisitos": "Estudantes de graduação, pós-graduação e pesquisadores",
+      "link": "https://www.upe.br/petrolina/semana-universitaria-2026-3/",
+      "descricao": "Maior evento acadêmico anual da UPE Petrolina, reunindo apresentações de pesquisa, extensão, minicursos e palestras.",
+      "fonte": "UPE Petrolina"
+    },
+    {
+      "id": "upe-residencia-pedagogica",
+      "titulo": "Programa de Residência Pedagógica UPE",
+      "instituicao": "UPE Petrolina",
+      "rede": "Pública",
+      "categoria": "Editais",
+      "data": "2026-11-25",
+      "prazo": "Consulte o edital",
+      "local": "Petrolina - PE",
+      "beneficio": "Bolsa",
+      "requisitos": "Estudantes de licenciatura da UPE que tenham cumprido 50% do curso",
+      "link": "https://upe.br/graduacao/programa-de-residencia-pedagogica/",
+      "descricao": "Seleção de alunos de licenciatura para imersão prática em escolas públicas com concessão de bolsas de estudo.",
+      "fonte": "UPE Geral"
+    },
+    {
+      "id": "uneb-encontro-historia-canudos",
+      "titulo": "Encontro de Pesquisadores e Memorialistas da História de Canudos",
+      "instituicao": "UNEB",
+      "rede": "Pública",
+      "categoria": "Eventos",
+      "data": "2026-11-30",
+      "prazo": "Até 30/11",
+      "local": "Juazeiro - BA",
+      "beneficio": "Certificado",
+      "requisitos": "Estudantes, pesquisadores e interessados na história regional",
+      "link": "https://portal.uneb.br/2026/11/24/encontro-homenageia-pesquisadores-e-memorialistas-da-historia-de-canudos-dia-30-11/",
+      "descricao": "Evento acadêmico em homenagem aos historiadores e pesquisadores da Guerra de Canudos com debates e exposições.",
+      "fonte": "UNEB"
+    },
+    {
+      "id": "uneb-dialogos-humana-docencia",
+      "titulo": "Encontro On-line: Diálogos sobre os Desafios da Humana Docência",
+      "instituicao": "UNEB",
+      "rede": "Pública",
+      "categoria": "Eventos",
+      "data": "2026-12-10",
+      "prazo": "Até 10/12",
+      "local": "Online",
+      "beneficio": "Gratuito",
+      "requisitos": "Estudantes de licenciatura, pós-graduação e profissionais da educação",
+      "link": "https://portal.uneb.br/2026/11/24/ceapip-uneb-realiza-novo-encontro-on-line-do-projeto-dialogos-sobre-os-desafios-da-humana-docencia-dia-10-12/",
+      "descricao": "Webinar promovido pelo Ceapip/UNEB focado na discussão dos desafios contemporâneos da formação e prática docente.",
+      "fonte": "UNEB"
+    }
+  ]
 }
