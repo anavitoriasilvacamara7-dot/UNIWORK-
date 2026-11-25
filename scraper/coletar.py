@@ -5,6 +5,7 @@ from datetime import datetime, timezone, timedelta
 import requests
 from bs4 import BeautifulSoup
 from google import genai
+from google.genai import types
 
 FONTES = [
     {"nome": "UNIVASF", "rede": "Pública", "url": "https://portais.univasf.edu.br/noticias"},
@@ -53,7 +54,7 @@ def estruturar_com_ia(itens_brutos):
     if not itens_brutos:
         return []
 
-    client = genai.Client(api_key=os.environ["GEMINI_API_KEY"])
+    client = genai.Client(api_key=os.environ["GEMINI_API_KEY"].strip())
     hoje = datetime.now(timezone(timedelta(hours=-3))).strftime("%Y-%m-%d")
 
     prompt = f"""
@@ -92,11 +93,16 @@ Dados brutos:
 """
 
     response = client.models.generate_content(
-        model="gemini-2.5-flash",
+        model="gemini-3.0-flash",
         contents=prompt,
+        config=types.GenerateContentConfig(
+            response_mime_type="application/json",
+        ),
     )
-    texto = response.text.strip()
+    texto = (response.text or "").strip()
     texto = re.sub(r"^```json\s*|\s*```$", "", texto, flags=re.MULTILINE).strip()
+    if not texto:
+        return []
     return json.loads(texto)
 
 def main():
