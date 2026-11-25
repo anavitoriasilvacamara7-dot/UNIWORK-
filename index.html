@@ -1,0 +1,853 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>UniWork · Oportunidades Universitárias no Vale do São Francisco</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #f8fafc;
+      --surface: #ffffff;
+      --surface-soft: #f1f5f9;
+      --ink: #0f172a;
+      --ink-muted: #475569;
+      --ink-subtle: #64748b;
+      --border: #e2e8f0;
+      --primary: #0f2a4a;
+      --primary-hover: #1b3f6e;
+      --accent: #0ea5e9;
+      --accent-soft: #e0f2fe;
+      --success-bg: #dcfce7;
+      --success-ink: #166534;
+      --purple-bg: #f3e8ff;
+      --purple-ink: #6b21a8;
+      --amber-bg: #fef3c7;
+      --amber-ink: #92400e;
+      --rose-bg: #ffe4e6;
+      --rose-ink: #9f1239;
+      --radius: 16px;
+      --shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.05);
+      --shadow-md: 0 8px 24px -6px rgba(15, 23, 42, 0.08);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--bg);
+      color: var(--ink);
+      line-height: 1.55;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* Header */
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 30;
+      background: rgba(255, 255, 255, 0.88);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .nav-inner {
+      max-width: 1180px;
+      margin: 0 auto;
+      padding: 14px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-decoration: none;
+      color: var(--ink);
+    }
+
+    .brand-mark {
+      width: 40px;
+      height: 40px;
+      border-radius: 12px;
+      background: var(--primary);
+      display: grid;
+      place-items: center;
+      flex-shrink: 0;
+      box-shadow: 0 4px 12px rgba(15, 42, 74, 0.18);
+    }
+
+    .brand-text {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .brand-title {
+      font-size: 1.15rem;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      line-height: 1.1;
+      color: var(--primary);
+    }
+
+    .brand-sub {
+      font-size: 0.72rem;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--ink-subtle);
+    }
+
+    .status-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 7px 14px;
+      border-radius: 999px;
+      background: var(--surface-soft);
+      border: 1px solid var(--border);
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: var(--ink-muted);
+    }
+
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #10b981;
+      box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.2);
+    }
+
+    /* Hero */
+    .hero {
+      max-width: 1180px;
+      margin: 0 auto;
+      padding: 44px 20px 28px;
+    }
+
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 14px;
+      border-radius: 999px;
+      background: var(--accent-soft);
+      color: var(--primary);
+      font-size: 0.78rem;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+      margin-bottom: 16px;
+    }
+
+    .hero h1 {
+      font-size: clamp(1.85rem, 4vw, 2.75rem);
+      font-weight: 800;
+      letter-spacing: -0.035em;
+      line-height: 1.15;
+      max-width: 780px;
+      color: var(--primary);
+      margin-bottom: 12px;
+    }
+
+    .hero p {
+      font-size: 1.02rem;
+      color: var(--ink-muted);
+      max-width: 660px;
+    }
+
+    /* Controls */
+    .controls-wrap {
+      max-width: 1180px;
+      margin: 0 auto;
+      padding: 0 20px 24px;
+    }
+
+    .controls-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 18px;
+      box-shadow: var(--shadow-sm);
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .search-row {
+      display: grid;
+      grid-template-columns: 1fr auto auto;
+      gap: 12px;
+    }
+
+    .input-box {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+
+    .input-box svg {
+      position: absolute;
+      left: 14px;
+      color: var(--ink-subtle);
+      pointer-events: none;
+    }
+
+    .search-input,
+    .select-input {
+      width: 100%;
+      font-family: inherit;
+      font-size: 0.92rem;
+      font-weight: 500;
+      color: var(--ink);
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 11px 14px;
+      outline: none;
+      transition: border-color 0.18s ease, box-shadow 0.18s ease, background 0.18s ease;
+    }
+
+    .search-input {
+      padding-left: 42px;
+    }
+
+    .search-input:focus,
+    .select-input:focus {
+      background: var(--surface);
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.15);
+    }
+
+    .select-input {
+      min-width: 175px;
+      cursor: pointer;
+    }
+
+    .filter-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .pills {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .pill {
+      font-family: inherit;
+      font-size: 0.84rem;
+      font-weight: 600;
+      padding: 8px 15px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      color: var(--ink-muted);
+      cursor: pointer;
+      transition: all 0.16s ease;
+    }
+
+    .pill:hover {
+      border-color: #cbd5e1;
+      color: var(--ink);
+      background: var(--surface-soft);
+    }
+
+    .pill.active {
+      background: var(--primary);
+      border-color: var(--primary);
+      color: #ffffff;
+    }
+
+    .fav-toggle {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    /* Results bar */
+    .results-meta {
+      max-width: 1180px;
+      margin: 0 auto;
+      padding: 0 20px 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      font-size: 0.86rem;
+      color: var(--ink-subtle);
+      font-weight: 500;
+    }
+
+    .results-meta strong {
+      color: var(--ink);
+    }
+
+    /* Grid */
+    main {
+      max-width: 1180px;
+      margin: 0 auto;
+      padding: 0 20px 64px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(330px, 1fr));
+      gap: 18px;
+    }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 22px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      box-shadow: var(--shadow-sm);
+      transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
+    }
+
+    .card:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-md);
+      border-color: #cbd5e1;
+    }
+
+    .card-top {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .badges {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    .badge {
+      font-size: 0.72rem;
+      font-weight: 700;
+      padding: 4px 10px;
+      border-radius: 999px;
+      letter-spacing: 0.01em;
+    }
+
+    .badge-cat-editais { background: var(--accent-soft); color: #0369a1; }
+    .badge-cat-simposios { background: var(--purple-bg); color: var(--purple-ink); }
+    .badge-cat-eventos { background: var(--amber-bg); color: var(--amber-ink); }
+    .badge-cat-minicursos { background: var(--success-bg); color: var(--success-ink); }
+    .badge-cat-bolsas { background: var(--rose-bg); color: var(--rose-ink); }
+    .badge-cat-default { background: var(--surface-soft); color: var(--ink-muted); }
+
+    .badge-rede {
+      background: var(--surface-soft);
+      color: var(--ink-muted);
+      border: 1px solid var(--border);
+    }
+
+    .btn-fav {
+      background: transparent;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      width: 34px;
+      height: 34px;
+      display: grid;
+      place-items: center;
+      cursor: pointer;
+      color: var(--ink-subtle);
+      flex-shrink: 0;
+      transition: all 0.15s ease;
+    }
+
+    .btn-fav:hover {
+      border-color: #cbd5e1;
+      color: var(--primary);
+      background: var(--surface-soft);
+    }
+
+    .btn-fav.saved {
+      background: #fef3c7;
+      border-color: #fcd34d;
+      color: #b45309;
+    }
+
+    .card-inst {
+      font-size: 0.78rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--accent);
+    }
+
+    .card-title {
+      font-size: 1.06rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      line-height: 1.35;
+      color: var(--ink);
+    }
+
+    .card-desc {
+      font-size: 0.89rem;
+      color: var(--ink-muted);
+      line-height: 1.55;
+    }
+
+    .meta-list {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px 12px;
+      padding: 12px;
+      border-radius: 12px;
+      background: var(--bg);
+      border: 1px solid #eef2f6;
+      font-size: 0.8rem;
+      margin-top: auto;
+    }
+
+    .meta-item {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      min-width: 0;
+    }
+
+    .meta-label {
+      font-size: 0.69rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--ink-subtle);
+    }
+
+    .meta-value {
+      font-weight: 600;
+      color: var(--ink);
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .card-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      padding-top: 4px;
+    }
+
+    .card-date {
+      font-size: 0.78rem;
+      color: var(--ink-subtle);
+      font-weight: 500;
+    }
+
+    .btn-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 9px 16px;
+      border-radius: 10px;
+      background: var(--primary);
+      color: #ffffff;
+      text-decoration: none;
+      font-size: 0.84rem;
+      font-weight: 600;
+      transition: background 0.16s ease, transform 0.16s ease;
+    }
+
+    .btn-link:hover {
+      background: var(--primary-hover);
+      transform: translateY(-1px);
+    }
+
+    /* States */
+    .state-box {
+      background: var(--surface);
+      border: 1px dashed #cbd5e1;
+      border-radius: var(--radius);
+      padding: 48px 24px;
+      text-align: center;
+      color: var(--ink-muted);
+    }
+
+    .state-box h3 {
+      color: var(--ink);
+      font-size: 1.08rem;
+      margin-bottom: 6px;
+    }
+
+    /* Footer */
+    footer {
+      border-top: 1px solid var(--border);
+      background: var(--surface);
+      padding: 24px 20px;
+      text-align: center;
+      font-size: 0.82rem;
+      color: var(--ink-subtle);
+    }
+
+    footer strong {
+      color: var(--primary);
+    }
+
+    @media (max-width: 780px) {
+      .search-row {
+        grid-template-columns: 1fr;
+      }
+      .grid {
+        grid-template-columns: 1fr;
+      }
+      .hero {
+        padding-top: 28px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="nav-inner">
+      <a href="#" class="brand" aria-label="UniWork - Início">
+        <div class="brand-mark">
+          <!-- Símbolo vetorial limpo inspirado na INOVA ADM -->
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path d="M12 2.5L20.5 7.25V16.75L12 21.5L3.5 16.75V7.25L12 2.5Z" stroke="#38BDF8" stroke-width="1.8" stroke-linejoin="round"/>
+            <path d="M8.2 9.2V13.4C8.2 15.1 9.6 16.4 12 16.4C14.4 16.4 15.8 15.1 15.8 13.4V9.2" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round"/>
+            <circle cx="12" cy="7.2" r="1.4" fill="#38BDF8"/>
+          </svg>
+        </div>
+        <div class="brand-text">
+          <span class="brand-title">UniWork</span>
+          <span class="brand-sub">Iniciativa INOVA ADM</span>
+        </div>
+      </a>
+
+      <div class="status-pill" id="statusAtualizacao">
+        <span class="status-dot"></span>
+        <span>Carregando atualização...</span>
+      </div>
+    </div>
+  </header>
+
+  <section class="hero">
+    <div class="hero-badge">Petrolina - PE &amp; Vale do São Francisco</div>
+    <h1>Editais, simpósios e eventos universitários em um só lugar.</h1>
+    <p>Curadoria automática diária das oportunidades publicadas nos portais acadêmicos públicos e privados da região.</p>
+  </section>
+
+  <section class="controls-wrap">
+    <div class="controls-card">
+      <div class="search-row">
+        <div class="input-box">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="11" cy="11" r="8"></circle>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+          </svg>
+          <input type="search" id="campoBusca" class="search-input" placeholder="Buscar por monitoria, PIBIC, simpósio, bolsa, instituição..." />
+        </div>
+
+        <select id="filtroInstituicao" class="select-input" aria-label="Filtrar por instituição">
+          <option value="Todas">Todas as instituições</option>
+        </select>
+
+        <select id="filtroRede" class="select-input" aria-label="Filtrar por rede">
+          <option value="Todas">Públicas e Privadas</option>
+          <option value="Pública">Apenas Públicas</option>
+          <option value="Privada">Apenas Privadas</option>
+        </select>
+      </div>
+
+      <div class="filter-row">
+        <div class="pills" id="filtrosCategoria">
+          <button type="button" class="pill active" data-cat="Todas">Todas</button>
+          <button type="button" class="pill" data-cat="Editais">Editais</button>
+          <button type="button" class="pill" data-cat="Simpósios">Simpósios</button>
+          <button type="button" class="pill" data-cat="Eventos">Eventos</button>
+          <button type="button" class="pill" data-cat="Minicursos">Minicursos</button>
+          <button type="button" class="pill" data-cat="Bolsas">Bolsas</button>
+        </div>
+
+        <button type="button" class="pill fav-toggle" id="btnSoFavoritos" aria-pressed="false">
+          <span id="iconeFavToggle">☆</span> Salvos (<span id="contFav">0</span>)
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <div class="results-meta">
+    <span id="contadorResultados">Carregando oportunidades...</span>
+    <span id="infoFontes">Atualizado 2x ao dia automaticamente</span>
+  </div>
+
+  <main>
+    <div id="listaCards" class="grid"></div>
+  </main>
+
+  <footer>
+    <strong>UniWork</strong> · Desenvolvido com a identidade da liga acadêmica <strong>INOVA ADM</strong> · Petrolina - PE
+  </footer>
+
+  <script>
+    const estado = {
+      itens: [],
+      busca: '',
+      categoria: 'Todas',
+      instituicao: 'Todas',
+      rede: 'Todas',
+      soFavoritos: false,
+      favoritos: new Set(JSON.parse(localStorage.getItem('uniwork_favs') || '[]'))
+    };
+
+    const elLista = document.getElementById('listaCards');
+    const elStatus = document.getElementById('statusAtualizacao');
+    const elContador = document.getElementById('contadorResultados');
+    const elBusca = document.getElementById('campoBusca');
+    const elInst = document.getElementById('filtroInstituicao');
+    const elRede = document.getElementById('filtroRede');
+    const elCategorias = document.getElementById('filtrosCategoria');
+    const elBtnFav = document.getElementById('btnSoFavoritos');
+    const elContFav = document.getElementById('contFav');
+    const elIconeFav = document.getElementById('iconeFavToggle');
+
+    function escaparHTML(str) {
+      return String(str || '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+    }
+
+    function normalizarTexto(str) {
+      return String(str || '')
+        .toLowerCase()
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '');
+    }
+
+    function classeCategoria(cat) {
+      const c = normalizarTexto(cat);
+      if (c.includes('edital') || c.includes('editais')) return 'badge-cat-editais';
+      if (c.includes('simposio')) return 'badge-cat-simposios';
+      if (c.includes('evento')) return 'badge-cat-eventos';
+      if (c.includes('minicurso') || c.includes('curso')) return 'badge-cat-minicursos';
+      if (c.includes('bolsa')) return 'badge-cat-bolsas';
+      return 'badge-cat-default';
+    }
+
+    function formatarDataHora(iso) {
+      if (!iso) return 'Atualização pendente';
+      const dt = new Date(iso);
+      if (isNaN(dt.getTime())) return 'Atualizado recentemente';
+      return 'Atualizado em ' + dt.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' }) +
+        ' às ' + dt.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+    }
+
+    function formatarDataCurta(yyyyMmDd) {
+      if (!yyyyMmDd) return '';
+      const partes = String(yyyyMmDd).split('-');
+      if (partes.length !== 3) return yyyyMmDd;
+      return `${partes[2]}/${partes[1]}/${partes[0]}`;
+    }
+
+    function salvarFavoritos() {
+      localStorage.setItem('uniwork_favs', JSON.stringify([...estado.favoritos]));
+      elContFav.textContent = estado.favoritos.size;
+    }
+
+    function popularInstituicoes(itens) {
+      const unicas = [...new Set(itens.map(i => i.instituicao).filter(Boolean))].sort();
+      elInst.innerHTML = '<option value="Todas">Todas as instituições</option>' +
+        unicas.map(inst => `<option value="${escaparHTML(inst)}">${escaparHTML(inst)}</option>`).join('');
+    }
+
+    function renderizar() {
+      const termo = normalizarTexto(estado.busca.trim());
+
+      const filtrados = estado.itens.filter(item => {
+        if (estado.soFavoritos && !estado.favoritos.has(item.id)) return false;
+
+        if (estado.categoria !== 'Todas') {
+          if (normalizarTexto(item.categoria) !== normalizarTexto(estado.categoria)) return false;
+        }
+
+        if (estado.instituicao !== 'Todas' && item.instituicao !== estado.instituicao) {
+          return false;
+        }
+
+        if (estado.rede !== 'Todas' && normalizarTexto(item.rede) !== normalizarTexto(estado.rede)) {
+          return false;
+        }
+
+        if (termo) {
+          const bloco = normalizarTexto([
+            item.titulo,
+            item.descricao,
+            item.instituicao,
+            item.categoria,
+            item.local,
+            item.beneficio,
+            item.requisitos
+          ].join(' '));
+          if (!bloco.includes(termo)) return false;
+        }
+
+        return true;
+      });
+
+      elContador.innerHTML = `Exibindo <strong>${filtrados.length}</strong> de <strong>${estado.itens.length}</strong> oportunidades`;
+
+      if (!filtrados.length) {
+        elLista.innerHTML = `
+          <div class="state-box" style="grid-column: 1 / -1;">
+            <h3>Nenhuma oportunidade encontrada</h3>
+            <p>Tente limpar os filtros ou buscar por outro termo.</p>
+          </div>
+        `;
+        return;
+      }
+
+      elLista.innerHTML = filtrados.map(item => {
+        const salvo = estado.favoritos.has(item.id);
+        const linkSeguro = /^https?:\/\//i.test(item.link || '') ? item.link : '#';
+
+        return `
+          <article class="card">
+            <div class="card-top">
+              <div class="badges">
+                <span class="badge ${classeCategoria(item.categoria)}">${escaparHTML(item.categoria || 'Oportunidade')}</span>
+                ${item.rede ? `<span class="badge badge-rede">${escaparHTML(item.rede)}</span>` : ''}
+              </div>
+              <button type="button" class="btn-fav ${salvo ? 'saved' : ''}" data-fav-id="${escaparHTML(item.id)}" title="${salvo ? 'Remover dos salvos' : 'Salvar oportunidade'}" aria-label="Salvar oportunidade">
+                ${salvo ? '★' : '☆'}
+              </button>
+            </div>
+
+            <div>
+              <div class="card-inst">${escaparHTML(item.instituicao || item.fonte || 'Instituição Regional')}</div>
+              <h2 class="card-title">${escaparHTML(item.titulo)}</h2>
+            </div>
+
+            <p class="card-desc">${escaparHTML(item.descricao)}</p>
+
+            <div class="meta-list">
+              <div class="meta-item">
+                <span class="meta-label">Prazo</span>
+                <span class="meta-value" title="${escaparHTML(item.prazo)}">${escaparHTML(item.prazo || 'Consultar')}</span>
+              </div>
+              <div class="meta-item">
+                <span class="meta-label">Local</span>
+                <span class="meta-value" title="${escaparHTML(item.local)}">${escaparHTML(item.local || 'Petrolina - PE')}</span>
+              </div>
+              <div class="meta-item">
+                <span class="meta-label">Benefício</span>
+                <span class="meta-value" title="${escaparHTML(item.beneficio)}">${escaparHTML(item.beneficio || 'Ver detalhes')}</span>
+              </div>
+              <div class="meta-item">
+                <span class="meta-label">Público</span>
+                <span class="meta-value" title="${escaparHTML(item.requisitos)}">${escaparHTML(item.requisitos || 'Universitários')}</span>
+              </div>
+            </div>
+
+            <div class="card-footer">
+              <span class="card-date">${item.data ? 'Ref.: ' + formatarDataCurta(item.data) : ''}</span>
+              <a class="btn-link" href="${escaparHTML(linkSeguro)}" target="_blank" rel="noopener noreferrer">
+                Acessar ↗
+              </a>
+            </div>
+          </article>
+        `;
+      }).join('');
+    }
+
+    async function carregarDados() {
+      try {
+        const resp = await fetch('./dados.json?t=' + Date.now(), { cache: 'no-store' });
+        if (!resp.ok) throw new Error('Falha ao carregar dados.json');
+        const json = await resp.json();
+
+        estado.itens = Array.isArray(json.itens) ? json.itens : [];
+        elStatus.innerHTML = `<span class="status-dot"></span><span>${escaparHTML(formatarDataHora(json.ultima_atualizacao))}</span>`;
+        popularInstituicoes(estado.itens);
+        salvarFavoritos();
+        renderizar();
+      } catch (err) {
+        console.error(err);
+        elStatus.innerHTML = `<span class="status-dot" style="background:#ef4444;"></span><span>Erro ao carregar dados</span>`;
+        elLista.innerHTML = `
+          <div class="state-box" style="grid-column: 1 / -1;">
+            <h3>Não foi possível carregar as oportunidades agora</h3>
+            <p>Verifique se o arquivo <code>dados.json</code> está na mesma pasta do <code>index.html</code>.</p>
+          </div>
+        `;
+      }
+    }
+
+    elBusca.addEventListener('input', e => {
+      estado.busca = e.target.value;
+      renderizar();
+    });
+
+    elInst.addEventListener('change', e => {
+      estado.instituicao = e.target.value;
+      renderizar();
+    });
+
+    elRede.addEventListener('change', e => {
+      estado.rede = e.target.value;
+      renderizar();
+    });
+
+    elCategorias.addEventListener('click', e => {
+      const btn = e.target.closest('button[data-cat]');
+      if (!btn) return;
+      elCategorias.querySelectorAll('.pill').forEach(p => p.classList.remove('active'));
+      btn.classList.add('active');
+      estado.categoria = btn.dataset.cat;
+      renderizar();
+    });
+
+    elBtnFav.addEventListener('click', () => {
+      estado.soFavoritos = !estado.soFavoritos;
+      elBtnFav.classList.toggle('active', estado.soFavoritos);
+      elBtnFav.setAttribute('aria-pressed', String(estado.soFavoritos));
+      elIconeFav.textContent = estado.soFavoritos ? '★' : '☆';
+      renderizar();
+    });
+
+    elLista.addEventListener('click', e => {
+      const btn = e.target.closest('button[data-fav-id]');
+      if (!btn) return;
+      const id = btn.dataset.favId;
+      if (estado.favoritos.has(id)) {
+        estado.favoritos.delete(id);
+      } else {
+        estado.favoritos.add(id);
+      }
+      salvarFavoritos();
+      renderizar();
+    });
+
+    carregarDados();
+  </script>
+</body>
+</html>
