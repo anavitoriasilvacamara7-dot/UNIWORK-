@@ -1,0 +1,34 @@
+name: Atualizar UniWork
+
+on:
+  schedule:
+    - cron: '0 10,21 * * *' # 07h00 e 18h00 (horário de Brasília)
+  workflow_dispatch:
+
+jobs:
+  coletar:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Baixar repositório
+        uses: actions/checkout@v4
+
+      - name: Configurar Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Instalar bibliotecas
+        run: pip install -r requirements.txt
+
+      - name: Rodar robô do UniWork
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+        run: python scraper/coletar.py
+
+      - name: Salvar dados atualizados
+        run: |
+          git config user.name "UniWork Bot"
+          git config user.email "bot@uniwork.local"
+          git add dados.json
+          git diff --staged --quiet || git commit -m "Atualização automática de eventos e editais"
+          git push
