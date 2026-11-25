@@ -1,18 +1,32 @@
 import os
 import json
 import re
+import socket
 from datetime import datetime, timezone, timedelta
 import requests
+import urllib3
 from bs4 import BeautifulSoup
 from google import genai
 from google.genai import types
 
+# Desativa avisos de certificado SSL comum em sites universitários brasileiros
+urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
+
+# Força conexão IPv4 para evitar erro "Network is unreachable" no GitHub Actions
+try:
+    import urllib3.util.connection as urllib3_cn
+    urllib3_cn.allowed_gai_family = lambda: socket.AF_INET
+except Exception:
+    pass
+
 FONTES = [
     {"nome": "UNIVASF", "rede": "Pública", "url": "https://portais.univasf.edu.br/noticias"},
-    {"nome": "IF Sertão-PE", "rede": "Pública", "url": "https://ifsertao-pe.edu.br/"},
-    {"nome": "UPE Petrolina", "rede": "Pública", "url": "https://www.upe.br/"},
-    {"nome": "FACAPE", "rede": "Pública", "url": "https://facape.br/"},
-    {"nome": "Even3 Petrolina", "rede": "Privada", "url": "https://www.even3.com.br/eventos/petrolina/"},
+    {"nome": "IF Sertão-PE", "rede": "Pública", "url": "https://www.ifsertao-pe.edu.br/"},
+    {"nome": "UPE Petrolina", "rede": "Pública", "url": "https://www.upe.br/petrolina/"},
+    {"nome": "UPE Geral", "rede": "Pública", "url": "https://www.upe.br/"},
+    {"nome": "FACAPE", "rede": "Pública", "url": "https://www.facape.br/"},
+    {"nome": "UNEB", "rede": "Pública", "url": "https://portal.uneb.br/noticias/"},
+    {"nome": "Sympla Petrolina", "rede": "Privada", "url": "https://www.sympla.com.br/eventos/petrolina-pe"},
 ]
 
 HEADERS = {
@@ -23,7 +37,7 @@ def coletar_links_brutos():
     coletados = []
     for fonte in FONTES:
         try:
-            resp = requests.get(fonte["url"], headers=HEADERS, timeout=15)
+            resp = requests.get(fonte["url"], headers=HEADERS, timeout=20, verify=False)
             resp.raise_for_status()
             soup = BeautifulSoup(resp.text, "html.parser")
             vistos = set()
@@ -46,6 +60,7 @@ def coletar_links_brutos():
                 })
                 if len(vistos) >= 15:
                     break
+            print(f"{fonte['nome']}: {len(vistos)} links coletados")
         except Exception as e:
             print(f"Aviso: não foi possível ler {fonte['nome']}: {e}")
     return coletados
@@ -89,25 +104,47 @@ Retorne EXCLUSIVAMENTE um JSON válido (uma lista de objetos), sem texto antes o
 ]
 
 Dados brutos:
-{json.dumps(itens_brutos[:60], ensure_ascii=False)}
+{json.dumps(itens_brutos[:70], ensure_ascii=False)}
 """
 
-    response = client.models.generate_content(
-        model="gemini-3.0-flash",
-        contents=prompt,
-        config=types.GenerateContentConfig(
-            response_mime_type="application/json",
-        ),
-    )
+    modelos = ["gemini-3.8-flash", "gemini-3.0-flash"]
+    response = None
+    ultimo_erro = None
+
+    for modelo in modelos:
+        try:
+            response = client.models.generate_content(
+                model=modelo,
+                contents=prompt,
+                config=types.GenerateContentConfig(
+                    response_mime_type="application/json",
+                ),
+            )
+            print(f"Modelo utilizado com sucesso: {modelo}")
+            break
+        except Exception as e:
+            print(f"Aviso ao tentar modelo {modelo}: {e}")
+            ultimo_erro = e
+
+    if response is None:
+        raise ultimo_erro
+
     texto = (response.text or "").strip()
     texto = re.sub(r"^```json\s*|\s*```$", "", texto, flags=re.MULTILINE).strip()
     if not texto:
         return []
-    return json.loads(texto)
+
+    dados = json.loads(texto)
+    if isinstance(dados, dict):
+        for valor in dados.values():
+            if isinstance(valor, list):
+                return valor
+        return []
+    return dados
 
 def main():
     brutos = coletar_links_brutos()
-    print(f"Links brutos coletados: {len(brutos)}")
+    print(f"Total de links brutos coletados: {len(brutos)}")
     itens = estruturar_com_ia(brutos)
     print(f"Itens aprovados pela IA: {len(itens)}")
 
