@@ -2,6 +2,7 @@ import os
 import json
 import re
 import socket
+import time
 from datetime import datetime, timezone, timedelta
 import requests
 import urllib3
@@ -22,14 +23,15 @@ FONTES = [
     {"nome": "IF Sertão-PE", "rede": "Pública", "url": "https://www.ifsertao-pe.edu.br/"},
     {"nome": "UPE Petrolina", "rede": "Pública", "url": "https://www.upe.br/petrolina/"},
     {"nome": "UPE Geral", "rede": "Pública", "url": "https://www.upe.br/"},
-    {"nome": "FACAPE", "rede": "Pública", "url": "https://www.facape.br/"},
-    {"nome": "UNEB", "rede": "Pública", "url": "https://portal.uneb.br/noticias/"},
+    {"nome": "FACAPE", "rede": "Pública", "url": "http://www.facape.br/"},
+    {"nome": "UNEB", "rede": "Pública", "url": "https://portal.uneb.br/"},
     {"nome": "Sympla Petrolina", "rede": "Privada", "url": "https://www.sympla.com.br/eventos/petrolina-pe"},
 ]
 
 HEADERS = {
     "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
 }
+
 
 def coletar_links_brutos():
     coletados = []
@@ -62,6 +64,62 @@ def coletar_links_brutos():
         except Exception as e:
             print(f"Aviso: não foi possível ler {fonte['nome']}: {e}")
     return coletados
+
+
+def listar_modelos_flash(client):
+    modelos = ["gemini-3.8-flash"]
+    try:
+        for m in client.models.list():
+            nome = (getattr(m, "name", "") or "").replace("models/", "")
+            acoes = getattr(m, "supported_actions", None) or []
+            if acoes and "generateContent" not in acoes:
+                continue
+            nome_low = nome.lower()
+            bloqueados = ("2.5", "embedding", "image", "audio", "tts", "live", "veo", "imagen", "aqa")
+            if "gemini" in nome_low and "flash" in nome_low and not any(b in nome_low for b in bloqueados):
+                if nome not in modelos:
+                    modelos.append(nome)
+    except Exception as e:
+        print(f"Aviso ao listar modelos extras: {e}")
+    return modelos[:4]
+
+
+def filtrar_sem_ia(itens_brutos):
+    hoje = datetime.now(timezone(timedelta(hours=-3))).strftime("%Y-%m-%d")
+    palavras = {
+        "Editais": ["edital", "seleção", "selecao", "monitoria", "estágio", "estagio", "inscrições", "inscricoes", "processo seletivo", "pibic", "extensão", "extensao"],
+        "Bolsas": ["bolsa", "auxílio", "auxilio", "fomento", "pesquisa"],
+        "Simpósios": ["simpósio", "simposio", "congresso", "semana", "jornada", "seminário", "seminario", "encontro", "fórum", "forum"],
+        "Minicursos": ["minicurso", "oficina", "curso", "workshop", "capacitação", "capacitacao", "treinamento"],
+        "Eventos": ["evento", "palestra", "hackathon", "mesa-redonda", "feira", "mostra", "aula inaugural"]
+    }
+    aprovados = []
+    for idx, item in enumerate(itens_brutos, start=1):
+        titulo_low = item["titulo_bruto"].lower()
+        categoria = None
+        for cat, termos in palavras.items():
+            if any(t in titulo_low for t in termos):
+                categoria = cat
+                break
+        if categoria or item["fonte"] == "Sympla Petrolina":
+            slug = re.sub(r"[^a-z0-9]+", "-", titulo_low)[:40].strip("-") or "item"
+            aprovados.append({
+                "id": f"{slug}-{idx}",
+                "titulo": item["titulo_bruto"],
+                "instituicao": item["fonte"].replace(" Geral", "").replace("Sympla Petrolina", "Evento Local"),
+                "rede": item["rede"],
+                "categoria": categoria or "Eventos",
+                "data": hoje,
+                "prazo": "Consultar no link",
+                "local": "Petrolina - PE",
+                "beneficio": "Ver detalhes no site",
+                "requisitos": "Estudantes universitários",
+                "link": item["link"],
+                "descricao": f"Oportunidade coletada automaticamente em {item['fonte']}.",
+                "fonte": item["fonte"]
+            })
+    return aprovados[:25]
+
 
 def estruturar_com_ia(itens_brutos):
     if not itens_brutos:
@@ -105,46 +163,52 @@ Dados brutos:
 {json.dumps(itens_brutos[:70], ensure_ascii=False)}
 """
 
-    modelos = ["gemini-3.8-flash", "gemini-3.0-flash"]
-    response = None
-    ultimo_erro = None
+    modelos = listar_modelos_flash(client)
+    print(f"Modelos candidatos: {modelos}")
 
     for modelo in modelos:
-        try:
-            response = client.models.generate_content(
-                model=modelo,
-                contents=prompt,
-                config=types.GenerateContentConfig(
-                    response_mime_type="application/json",
-                ),
-            )
-            print(f"Modelo utilizado com sucesso: {modelo}")
-            break
-        except Exception as e:
-            print(f"Aviso ao tentar modelo {modelo}: {e}")
-            ultimo_erro = e
+        for tentativa in range(1, 4):
+            try:
+                response = client.models.generate_content(
+                    model=modelo,
+                    contents=prompt,
+                    config=types.GenerateContentConfig(
+                        response_mime_type="application/json",
+                    ),
+                )
+                texto = (response.text or "").strip()
+                texto = re.sub(r"^```json\s*|\s*```$", "", texto, flags=re.MULTILINE).strip()
+                if not texto:
+                    continue
+                dados = json.loads(texto)
+                if isinstance(dados, dict):
+                    for valor in dados.values():
+                        if isinstance(valor, list):
+                            dados = valor
+                            break
+                    else:
+                        dados = []
+                print(f"Modelo utilizado com sucesso: {modelo} (tentativa {tentativa})")
+                return dados
+            except Exception as e:
+                erro_str = str(e)
+                print(f"Aviso ({modelo}, tentativa {tentativa}): {erro_str}")
+                if any(cod in erro_str for cod in ("503", "UNAVAILABLE", "429", "RESOURCE_EXHAUSTED")):
+                    espera = 10 * tentativa
+                    print(f"Aguardando {espera}s para tentar novamente...")
+                    time.sleep(espera)
+                else:
+                    break
 
-    if response is None:
-        raise ultimo_erro
+    print("IA temporariamente indisponível; usando filtro local de contingência.")
+    return filtrar_sem_ia(itens_brutos)
 
-    texto = (response.text or "").strip()
-    texto = re.sub(r"^```json\s*|\s*```$", "", texto, flags=re.MULTILINE).strip()
-    if not texto:
-        return []
-
-    dados = json.loads(texto)
-    if isinstance(dados, dict):
-        for valor in dados.values():
-            if isinstance(valor, list):
-                return valor
-        return []
-    return dados
 
 def main():
     brutos = coletar_links_brutos()
     print(f"Total de links brutos coletados: {len(brutos)}")
     itens = estruturar_com_ia(brutos)
-    print(f"Itens aprovados pela IA: {len(itens)}")
+    print(f"Itens aprovados: {len(itens)}")
 
     agora = datetime.now(timezone(timedelta(hours=-3))).isoformat(timespec="seconds")
     resultado = {
@@ -154,6 +218,7 @@ def main():
 
     with open("dados.json", "w", encoding="utf-8") as f:
         json.dump(resultado, f, ensure_ascii=False, indent=2)
+
 
 if __name__ == "__main__":
     main()
