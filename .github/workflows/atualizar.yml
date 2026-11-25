@@ -1,9 +1,16 @@
 name: Atualizar UniWork
 
 on:
+  push:
+    paths:
+      - 'coletar.py'
+      - '.github/workflows/atualizar.yml'
   schedule:
     - cron: '0 10,21 * * *' # 07h00 e 18h00 (horário de Brasília)
   workflow_dispatch:
+
+permissions:
+  contents: write
 
 jobs:
   coletar:
@@ -23,7 +30,7 @@ jobs:
       - name: Rodar robô do UniWork
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
-        run: python scraper/coletar.py
+        run: python coletar.py
 
       - name: Salvar dados atualizados
         run: |
