@@ -3,34 +3,40 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>UniWork · Oportunidades Universitárias no Vale do São Francisco</title>
+  <title>UniWork · INOVA ADM · Oportunidades Universitárias e Inovação</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
   <style>
     :root {
-      --bg: #f8fafc;
-      --surface: #ffffff;
-      --surface-soft: #f1f5f9;
-      --ink: #0f172a;
-      --ink-muted: #475569;
-      --ink-subtle: #64748b;
-      --border: #e2e8f0;
-      --primary: #0f2a4a;
-      --primary-hover: #1b3f6e;
-      --accent: #0ea5e9;
-      --accent-soft: #e0f2fe;
-      --success-bg: #dcfce7;
-      --success-ink: #166534;
-      --purple-bg: #f3e8ff;
-      --purple-ink: #6b21a8;
-      --amber-bg: #fef3c7;
-      --amber-ink: #92400e;
-      --rose-bg: #ffe4e6;
-      --rose-ink: #9f1239;
+      --inova-blue: #0094FF;
+      --inova-indigo: #3B52E5;
+      --inova-purple: #7A1CE6;
+      --inova-gradient: linear-gradient(135deg, #0094FF 0%, #3B52E5 52%, #7A1CE6 100%);
+      --inova-gradient-soft: linear-gradient(135deg, rgba(0, 148, 255, 0.10) 0%, rgba(59, 82, 229, 0.10) 52%, rgba(122, 28, 230, 0.10) 100%);
+
+      --bg: #F8F9FC;
+      --surface: #FFFFFF;
+      --surface-soft: #F2F4F8;
+      --ink: #1C1E26;
+      --ink-muted: #4B5263;
+      --ink-subtle: #6B7280;
+      --border: #E5E8F0;
+
+      --cat-editais-bg: #E6F4FF;
+      --cat-editais-ink: #0066CC;
+      --cat-simposios-bg: #F3E8FF;
+      --cat-simposios-ink: #6D17CE;
+      --cat-eventos-bg: #EEF0FF;
+      --cat-eventos-ink: #3044C9;
+      --cat-minicursos-bg: #E6FBF3;
+      --cat-minicursos-ink: #047857;
+      --cat-bolsas-bg: #FCE7F3;
+      --cat-bolsas-ink: #9D174D;
+
       --radius: 16px;
-      --shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.05);
-      --shadow-md: 0 8px 24px -6px rgba(15, 23, 42, 0.08);
+      --shadow-sm: 0 1px 3px rgba(28, 30, 38, 0.04);
+      --shadow-md: 0 12px 28px -8px rgba(59, 82, 229, 0.14);
     }
 
     * {
@@ -41,26 +47,34 @@
 
     body {
       font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
-      background: var(--bg);
+      background:
+        radial-gradient(circle at 12% 0%, rgba(0, 148, 255, 0.06), transparent 36%),
+        radial-gradient(circle at 88% 4%, rgba(122, 28, 230, 0.06), transparent 36%),
+        var(--bg);
       color: var(--ink);
       line-height: 1.55;
       -webkit-font-smoothing: antialiased;
     }
 
-    /* Header */
+    .top-accent {
+      height: 3px;
+      width: 100%;
+      background: var(--inova-gradient);
+    }
+
     header {
       position: sticky;
       top: 0;
       z-index: 30;
       background: rgba(255, 255, 255, 0.88);
-      backdrop-filter: blur(12px);
+      backdrop-filter: blur(14px);
       border-bottom: 1px solid var(--border);
     }
 
     .nav-inner {
       max-width: 1180px;
       margin: 0 auto;
-      padding: 14px 20px;
+      padding: 13px 20px;
       display: flex;
       align-items: center;
       justify-content: space-between;
@@ -77,14 +91,15 @@
     }
 
     .brand-mark {
-      width: 40px;
-      height: 40px;
+      width: 44px;
+      height: 44px;
       border-radius: 12px;
-      background: var(--primary);
+      background: #FFFFFF;
+      border: 1px solid var(--border);
       display: grid;
       place-items: center;
       flex-shrink: 0;
-      box-shadow: 0 4px 12px rgba(15, 42, 74, 0.18);
+      box-shadow: 0 4px 14px rgba(59, 82, 229, 0.10);
     }
 
     .brand-text {
@@ -93,19 +108,27 @@
     }
 
     .brand-title {
-      font-size: 1.15rem;
+      font-size: 1.2rem;
       font-weight: 800;
       letter-spacing: -0.03em;
       line-height: 1.1;
-      color: var(--primary);
+      color: var(--ink);
+    }
+
+    .brand-title span {
+      background: var(--inova-gradient);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
     }
 
     .brand-sub {
-      font-size: 0.72rem;
-      font-weight: 600;
-      letter-spacing: 0.06em;
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
       text-transform: uppercase;
       color: var(--ink-subtle);
+      margin-top: 2px;
     }
 
     .status-pill {
@@ -114,22 +137,22 @@
       gap: 8px;
       padding: 7px 14px;
       border-radius: 999px;
-      background: var(--surface-soft);
+      background: var(--surface);
       border: 1px solid var(--border);
       font-size: 0.78rem;
       font-weight: 600;
       color: var(--ink-muted);
+      box-shadow: var(--shadow-sm);
     }
 
     .status-dot {
       width: 8px;
       height: 8px;
       border-radius: 50%;
-      background: #10b981;
-      box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.2);
+      background: var(--inova-blue);
+      box-shadow: 0 0 0 3px rgba(0, 148, 255, 0.18);
     }
 
-    /* Hero */
     .hero {
       max-width: 1180px;
       margin: 0 auto;
@@ -142,8 +165,9 @@
       gap: 8px;
       padding: 6px 14px;
       border-radius: 999px;
-      background: var(--accent-soft);
-      color: var(--primary);
+      background: var(--inova-gradient-soft);
+      border: 1px solid rgba(59, 82, 229, 0.18);
+      color: var(--inova-indigo);
       font-size: 0.78rem;
       font-weight: 700;
       letter-spacing: 0.02em;
@@ -151,26 +175,32 @@
     }
 
     .hero h1 {
-      font-size: clamp(1.85rem, 4vw, 2.75rem);
+      font-size: clamp(1.9rem, 4vw, 2.8rem);
       font-weight: 800;
       letter-spacing: -0.035em;
-      line-height: 1.15;
-      max-width: 780px;
-      color: var(--primary);
+      line-height: 1.14;
+      max-width: 800px;
+      color: var(--ink);
       margin-bottom: 12px;
+    }
+
+    .hero h1 .grad-text {
+      background: var(--inova-gradient);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
     }
 
     .hero p {
       font-size: 1.02rem;
       color: var(--ink-muted);
-      max-width: 660px;
+      max-width: 680px;
     }
 
-    /* Controls */
     .controls-wrap {
       max-width: 1180px;
       margin: 0 auto;
-      padding: 0 20px 24px;
+      padding: 0 20px 20px;
     }
 
     .controls-card {
@@ -225,12 +255,12 @@
     .search-input:focus,
     .select-input:focus {
       background: var(--surface);
-      border-color: var(--accent);
-      box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.15);
+      border-color: var(--inova-indigo);
+      box-shadow: 0 0 0 3px rgba(59, 82, 229, 0.14);
     }
 
     .select-input {
-      min-width: 175px;
+      min-width: 180px;
       cursor: pointer;
     }
 
@@ -253,34 +283,121 @@
       font-family: inherit;
       font-size: 0.84rem;
       font-weight: 600;
-      padding: 8px 15px;
+      padding: 8px 16px;
       border-radius: 999px;
       border: 1px solid var(--border);
       background: var(--surface);
       color: var(--ink-muted);
       cursor: pointer;
-      transition: all 0.16s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      transition: all 0.18s ease;
     }
 
     .pill:hover {
-      border-color: #cbd5e1;
-      color: var(--ink);
-      background: var(--surface-soft);
+      border-color: rgba(59, 82, 229, 0.35);
+      color: var(--inova-indigo);
+      background: #F5F7FF;
+    }
+
+    .pill-inovacao {
+      border-color: rgba(59, 82, 229, 0.32);
+      background: var(--inova-gradient-soft);
+      color: var(--inova-indigo);
+      font-weight: 700;
+    }
+
+    .pill-inovacao:hover {
+      border-color: var(--inova-indigo);
+    }
+
+    .pill-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--inova-gradient);
+      flex-shrink: 0;
     }
 
     .pill.active {
-      background: var(--primary);
-      border-color: var(--primary);
-      color: #ffffff;
+      background: var(--inova-gradient);
+      border-color: transparent;
+      color: #FFFFFF;
+      box-shadow: 0 4px 12px rgba(59, 82, 229, 0.24);
     }
 
-    .fav-toggle {
-      display: inline-flex;
+    .pill.active .pill-dot {
+      background: #FFFFFF;
+    }
+
+    .pill-count {
+      font-size: 0.72rem;
+      font-weight: 700;
+      padding: 1px 7px;
+      border-radius: 999px;
+      background: rgba(59, 82, 229, 0.12);
+      color: var(--inova-indigo);
+    }
+
+    .pill.active .pill-count {
+      background: rgba(255, 255, 255, 0.22);
+      color: #FFFFFF;
+    }
+
+    /* Faixa dedicada da aba Inovação */
+    .inovacao-banner {
+      max-width: 1180px;
+      margin: 0 auto 18px;
+      padding: 0 20px;
+      display: none;
+    }
+
+    .inovacao-banner.visible {
+      display: block;
+    }
+
+    .inovacao-banner-inner {
+      background: var(--surface);
+      border: 1px solid rgba(59, 82, 229, 0.24);
+      border-left: 4px solid var(--inova-indigo);
+      border-radius: 14px;
+      padding: 16px 20px;
+      display: flex;
       align-items: center;
-      gap: 6px;
+      justify-content: space-between;
+      gap: 16px;
+      flex-wrap: wrap;
+      box-shadow: var(--shadow-sm);
     }
 
-    /* Results bar */
+    .inovacao-banner-title {
+      font-size: 0.94rem;
+      font-weight: 800;
+      color: var(--ink);
+      margin-bottom: 2px;
+    }
+
+    .inovacao-banner-desc {
+      font-size: 0.85rem;
+      color: var(--ink-muted);
+    }
+
+    .inovacao-tags {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    .inovacao-tag {
+      font-size: 0.72rem;
+      font-weight: 700;
+      padding: 4px 10px;
+      border-radius: 999px;
+      background: var(--inova-gradient-soft);
+      color: var(--inova-indigo);
+    }
+
     .results-meta {
       max-width: 1180px;
       margin: 0 auto;
@@ -298,7 +415,6 @@
       color: var(--ink);
     }
 
-    /* Grid */
     main {
       max-width: 1180px;
       margin: 0 auto;
@@ -312,6 +428,7 @@
     }
 
     .card {
+      position: relative;
       background: var(--surface);
       border: 1px solid var(--border);
       border-radius: var(--radius);
@@ -320,13 +437,35 @@
       flex-direction: column;
       gap: 14px;
       box-shadow: var(--shadow-sm);
-      transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
+      transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+      overflow: hidden;
+    }
+
+    .card::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: var(--inova-gradient);
+      opacity: 0;
+      transition: opacity 0.2s ease;
+    }
+
+    .card.card-inovacao {
+      border-color: rgba(59, 82, 229, 0.22);
+    }
+
+    .card.card-inovacao::before,
+    .card:hover::before {
+      opacity: 1;
     }
 
     .card:hover {
-      transform: translateY(-2px);
+      transform: translateY(-3px);
       box-shadow: var(--shadow-md);
-      border-color: #cbd5e1;
+      border-color: rgba(59, 82, 229, 0.34);
     }
 
     .card-top {
@@ -351,11 +490,12 @@
       letter-spacing: 0.01em;
     }
 
-    .badge-cat-editais { background: var(--accent-soft); color: #0369a1; }
-    .badge-cat-simposios { background: var(--purple-bg); color: var(--purple-ink); }
-    .badge-cat-eventos { background: var(--amber-bg); color: var(--amber-ink); }
-    .badge-cat-minicursos { background: var(--success-bg); color: var(--success-ink); }
-    .badge-cat-bolsas { background: var(--rose-bg); color: var(--rose-ink); }
+    .badge-cat-inovacao { background: var(--inova-gradient); color: #FFFFFF; }
+    .badge-cat-editais { background: var(--cat-editais-bg); color: var(--cat-editais-ink); }
+    .badge-cat-simposios { background: var(--cat-simposios-bg); color: var(--cat-simposios-ink); }
+    .badge-cat-eventos { background: var(--cat-eventos-bg); color: var(--cat-eventos-ink); }
+    .badge-cat-minicursos { background: var(--cat-minicursos-bg); color: var(--cat-minicursos-ink); }
+    .badge-cat-bolsas { background: var(--cat-bolsas-bg); color: var(--cat-bolsas-ink); }
     .badge-cat-default { background: var(--surface-soft); color: var(--ink-muted); }
 
     .badge-rede {
@@ -379,23 +519,27 @@
     }
 
     .btn-fav:hover {
-      border-color: #cbd5e1;
-      color: var(--primary);
-      background: var(--surface-soft);
+      border-color: rgba(59, 82, 229, 0.35);
+      color: var(--inova-indigo);
+      background: #F5F7FF;
     }
 
     .btn-fav.saved {
-      background: #fef3c7;
-      border-color: #fcd34d;
-      color: #b45309;
+      background: var(--inova-gradient-soft);
+      border-color: rgba(122, 28, 230, 0.35);
+      color: var(--inova-purple);
     }
 
     .card-inst {
-      font-size: 0.78rem;
-      font-weight: 700;
+      font-size: 0.76rem;
+      font-weight: 800;
       text-transform: uppercase;
-      letter-spacing: 0.05em;
-      color: var(--accent);
+      letter-spacing: 0.06em;
+      background: var(--inova-gradient);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 3px;
     }
 
     .card-title {
@@ -419,7 +563,7 @@
       padding: 12px;
       border-radius: 12px;
       background: var(--bg);
-      border: 1px solid #eef2f6;
+      border: 1px solid #ECEFF6;
       font-size: 0.8rem;
       margin-top: auto;
     }
@@ -432,7 +576,7 @@
     }
 
     .meta-label {
-      font-size: 0.69rem;
+      font-size: 0.68rem;
       font-weight: 700;
       text-transform: uppercase;
       letter-spacing: 0.05em;
@@ -465,25 +609,26 @@
       display: inline-flex;
       align-items: center;
       gap: 6px;
-      padding: 9px 16px;
+      padding: 9px 17px;
       border-radius: 10px;
-      background: var(--primary);
-      color: #ffffff;
+      background: var(--inova-gradient);
+      color: #FFFFFF;
       text-decoration: none;
       font-size: 0.84rem;
       font-weight: 600;
-      transition: background 0.16s ease, transform 0.16s ease;
+      box-shadow: 0 4px 12px rgba(59, 82, 229, 0.22);
+      transition: transform 0.16s ease, box-shadow 0.16s ease, filter 0.16s ease;
     }
 
     .btn-link:hover {
-      background: var(--primary-hover);
       transform: translateY(-1px);
+      box-shadow: 0 6px 18px rgba(122, 28, 230, 0.28);
+      filter: brightness(1.05);
     }
 
-    /* States */
     .state-box {
       background: var(--surface);
-      border: 1px dashed #cbd5e1;
+      border: 1px dashed #CBD5E1;
       border-radius: var(--radius);
       padding: 48px 24px;
       text-align: center;
@@ -496,18 +641,25 @@
       margin-bottom: 6px;
     }
 
-    /* Footer */
     footer {
       border-top: 1px solid var(--border);
       background: var(--surface);
-      padding: 24px 20px;
+      padding: 26px 20px;
       text-align: center;
       font-size: 0.82rem;
       color: var(--ink-subtle);
     }
 
     footer strong {
-      color: var(--primary);
+      color: var(--ink);
+    }
+
+    footer .inova-tag {
+      font-weight: 800;
+      background: var(--inova-gradient);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
     }
 
     @media (max-width: 780px) {
@@ -524,19 +676,34 @@
   </style>
 </head>
 <body>
+  <div class="top-accent"></div>
+
   <header>
     <div class="nav-inner">
-      <a href="#" class="brand" aria-label="UniWork - Início">
+      <a href="#" class="brand" aria-label="UniWork - INOVA ADM">
         <div class="brand-mark">
-          <!-- Símbolo vetorial limpo inspirado na INOVA ADM -->
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-            <path d="M12 2.5L20.5 7.25V16.75L12 21.5L3.5 16.75V7.25L12 2.5Z" stroke="#38BDF8" stroke-width="1.8" stroke-linejoin="round"/>
-            <path d="M8.2 9.2V13.4C8.2 15.1 9.6 16.4 12 16.4C14.4 16.4 15.8 15.1 15.8 13.4V9.2" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round"/>
-            <circle cx="12" cy="7.2" r="1.4" fill="#38BDF8"/>
+          <svg width="34" height="34" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <defs>
+              <linearGradient id="inovaGrad" x1="4" y1="4" x2="44" y2="44" gradientUnits="userSpaceOnUse">
+                <stop offset="0%" stop-color="#0094FF"/>
+                <stop offset="52%" stop-color="#3B52E5"/>
+                <stop offset="100%" stop-color="#7A1CE6"/>
+              </linearGradient>
+            </defs>
+            <ellipse cx="24" cy="24" rx="19" ry="8.5" transform="rotate(-38 24 24)" stroke="url(#inovaGrad)" stroke-width="2.2" stroke-linecap="round"/>
+            <ellipse cx="24" cy="24" rx="19" ry="8.5" transform="rotate(38 24 24)" stroke="url(#inovaGrad)" stroke-width="2.2" stroke-linecap="round"/>
+            <path d="M24 14.5V9.5M16.2 28.5L12.5 30.8M31.8 28.5L35.5 30.8" stroke="url(#inovaGrad)" stroke-width="1.8" stroke-linecap="round"/>
+            <path d="M24 15.2L31.6 28.4H16.4L24 15.2Z" stroke="url(#inovaGrad)" stroke-width="2" stroke-linejoin="round" fill="rgba(59, 82, 229, 0.08)"/>
+            <circle cx="24" cy="15.2" r="2.6" fill="#0094FF"/>
+            <circle cx="16.4" cy="28.4" r="2.6" fill="#3B52E5"/>
+            <circle cx="31.6" cy="28.4" r="2.6" fill="#7A1CE6"/>
+            <circle cx="24" cy="8.2" r="1.6" fill="#0094FF"/>
+            <circle cx="11.2" cy="31.5" r="1.6" fill="#3B52E5"/>
+            <circle cx="36.8" cy="31.5" r="1.6" fill="#7A1CE6"/>
           </svg>
         </div>
         <div class="brand-text">
-          <span class="brand-title">UniWork</span>
+          <span class="brand-title">Uni<span>Work</span></span>
           <span class="brand-sub">Iniciativa INOVA ADM</span>
         </div>
       </a>
@@ -549,9 +716,9 @@
   </header>
 
   <section class="hero">
-    <div class="hero-badge">Petrolina - PE &amp; Vale do São Francisco</div>
-    <h1>Editais, simpósios e eventos universitários em um só lugar.</h1>
-    <p>Curadoria automática diária das oportunidades publicadas nos portais acadêmicos públicos e privados da região.</p>
+    <div class="hero-badge">Petrolina - PE &amp; Ecossistema de Inovação</div>
+    <h1>Editais, inovação e eventos universitários <span class="grad-text">em um só lugar.</span></h1>
+    <p>Curadoria automática diária de editais acadêmicos, simpósios e chamadas de fomento para tirar ideias inovadoras do papel.</p>
   </section>
 
   <section class="controls-wrap">
@@ -562,7 +729,7 @@
             <circle cx="11" cy="11" r="8"></circle>
             <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
           </svg>
-          <input type="search" id="campoBusca" class="search-input" placeholder="Buscar por monitoria, PIBIC, simpósio, bolsa, instituição..." />
+          <input type="search" id="campoBusca" class="search-input" placeholder="Buscar por fomento, startup, hackathon, monitoria, PIBIC, simpósio..." />
         </div>
 
         <select id="filtroInstituicao" class="select-input" aria-label="Filtrar por instituição">
@@ -579,6 +746,11 @@
       <div class="filter-row">
         <div class="pills" id="filtrosCategoria">
           <button type="button" class="pill active" data-cat="Todas">Todas</button>
+          <button type="button" class="pill pill-inovacao" data-cat="Inovação">
+            <span class="pill-dot"></span>
+            Inovação
+            <span class="pill-count" id="contInovacao">0</span>
+          </button>
           <button type="button" class="pill" data-cat="Editais">Editais</button>
           <button type="button" class="pill" data-cat="Simpósios">Simpósios</button>
           <button type="button" class="pill" data-cat="Eventos">Eventos</button>
@@ -586,9 +758,27 @@
           <button type="button" class="pill" data-cat="Bolsas">Bolsas</button>
         </div>
 
-        <button type="button" class="pill fav-toggle" id="btnSoFavoritos" aria-pressed="false">
-          <span id="iconeFavToggle">☆</span> Salvos (<span id="contFav">0</span>)
+        <button type="button" class="pill" id="btnSoFavoritos" aria-pressed="false">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" id="iconeFavToggle">
+            <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+          </svg>
+          Salvos (<span id="contFav">0</span>)
         </button>
+      </div>
+    </div>
+  </section>
+
+  <section class="inovacao-banner" id="bannerInovacao" aria-live="polite">
+    <div class="inovacao-banner-inner">
+      <div>
+        <div class="inovacao-banner-title">Vitrine de Inovação &amp; Empreendedorismo</div>
+        <div class="inovacao-banner-desc">Editais de fomento, programas de pré-aceleração, desafios de startups e chamadas para projetos inovadores.</div>
+      </div>
+      <div class="inovacao-tags">
+        <span class="inovacao-tag">Fomento</span>
+        <span class="inovacao-tag">Startups</span>
+        <span class="inovacao-tag">Hackathons</span>
+        <span class="inovacao-tag">Pré-aceleração</span>
       </div>
     </div>
   </section>
@@ -603,7 +793,7 @@
   </main>
 
   <footer>
-    <strong>UniWork</strong> · Desenvolvido com a identidade da liga acadêmica <strong>INOVA ADM</strong> · Petrolina - PE
+    <strong>UniWork</strong> · Iniciativa da liga acadêmica <span class="inova-tag">INOVA ADM</span> · Petrolina - PE
   </footer>
 
   <script>
@@ -620,6 +810,8 @@
     const elLista = document.getElementById('listaCards');
     const elStatus = document.getElementById('statusAtualizacao');
     const elContador = document.getElementById('contadorResultados');
+    const elContInovacao = document.getElementById('contInovacao');
+    const elBannerInovacao = document.getElementById('bannerInovacao');
     const elBusca = document.getElementById('campoBusca');
     const elInst = document.getElementById('filtroInstituicao');
     const elRede = document.getElementById('filtroRede');
@@ -644,8 +836,13 @@
         .replace(/[\u0300-\u036f]/g, '');
     }
 
+    function ehInovacao(item) {
+      return normalizarTexto(item.categoria).includes('inovac');
+    }
+
     function classeCategoria(cat) {
       const c = normalizarTexto(cat);
+      if (c.includes('inovac')) return 'badge-cat-inovacao';
       if (c.includes('edital') || c.includes('editais')) return 'badge-cat-editais';
       if (c.includes('simposio')) return 'badge-cat-simposios';
       if (c.includes('evento')) return 'badge-cat-eventos';
@@ -669,6 +866,10 @@
       return `${partes[2]}/${partes[1]}/${partes[0]}`;
     }
 
+    function iconeEstrelaSVG(preenchida) {
+      return `<svg width="15" height="15" viewBox="0 0 24 24" fill="${preenchida ? 'currentColor' : 'none'}" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>`;
+    }
+
     function salvarFavoritos() {
       localStorage.setItem('uniwork_favs', JSON.stringify([...estado.favoritos]));
       elContFav.textContent = estado.favoritos.size;
@@ -682,6 +883,10 @@
 
     function renderizar() {
       const termo = normalizarTexto(estado.busca.trim());
+      const totalInovacao = estado.itens.filter(ehInovacao).length;
+      elContInovacao.textContent = totalInovacao;
+
+      elBannerInovacao.classList.toggle('visible', normalizarTexto(estado.categoria) === 'inovacao');
 
       const filtrados = estado.itens.filter(item => {
         if (estado.soFavoritos && !estado.favoritos.has(item.id)) return false;
@@ -719,8 +924,8 @@
       if (!filtrados.length) {
         elLista.innerHTML = `
           <div class="state-box" style="grid-column: 1 / -1;">
-            <h3>Nenhuma oportunidade encontrada</h3>
-            <p>Tente limpar os filtros ou buscar por outro termo.</p>
+            <h3>Nenhuma oportunidade encontrada neste filtro</h3>
+            <p>Aguarde a próxima coleta automática ou tente buscar por outro termo.</p>
           </div>
         `;
         return;
@@ -729,16 +934,17 @@
       elLista.innerHTML = filtrados.map(item => {
         const salvo = estado.favoritos.has(item.id);
         const linkSeguro = /^https?:\/\//i.test(item.link || '') ? item.link : '#';
+        const destaqueInovacao = ehInovacao(item) ? 'card-inovacao' : '';
 
         return `
-          <article class="card">
+          <article class="card ${destaqueInovacao}">
             <div class="card-top">
               <div class="badges">
                 <span class="badge ${classeCategoria(item.categoria)}">${escaparHTML(item.categoria || 'Oportunidade')}</span>
                 ${item.rede ? `<span class="badge badge-rede">${escaparHTML(item.rede)}</span>` : ''}
               </div>
               <button type="button" class="btn-fav ${salvo ? 'saved' : ''}" data-fav-id="${escaparHTML(item.id)}" title="${salvo ? 'Remover dos salvos' : 'Salvar oportunidade'}" aria-label="Salvar oportunidade">
-                ${salvo ? '★' : '☆'}
+                ${iconeEstrelaSVG(salvo)}
               </button>
             </div>
 
@@ -830,7 +1036,7 @@
       estado.soFavoritos = !estado.soFavoritos;
       elBtnFav.classList.toggle('active', estado.soFavoritos);
       elBtnFav.setAttribute('aria-pressed', String(estado.soFavoritos));
-      elIconeFav.textContent = estado.soFavoritos ? '★' : '☆';
+      elIconeFav.setAttribute('fill', estado.soFavoritos ? 'currentColor' : 'none');
       renderizar();
     });
 
