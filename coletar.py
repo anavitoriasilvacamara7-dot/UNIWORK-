@@ -31,7 +31,8 @@ FONTES = [
     {"nome": "Sympla Petrolina", "rede": "Privada", "foco": "academico", "url": "https://www.sympla.com.br/eventos/petrolina-pe"},
 
     # Portais de inovação, fomento e ideias inovadoras
-    {"nome": "FACEPE", "rede": "Pública", "foco": "inovacao", "url": "https://www.facepe.br/editais/"},
+    {"nome": "FACEPE Editais", "rede": "Pública", "foco": "inovacao", "url": "https://www.facepe.br/editais/"},
+    {"nome": "FACEPE Notícias", "rede": "Pública", "foco": "inovacao", "url": "https://www.facepe.br/noticias/"},
     {"nome": "Finep", "rede": "Pública", "foco": "inovacao", "url": "http://www.finep.gov.br/chamadas-publicas"},
     {"nome": "Programa Centelha", "rede": "Pública", "foco": "inovacao", "url": "https://programacentelha.com.br/"},
     {"nome": "Sebrae Startups", "rede": "Privada", "foco": "inovacao", "url": "https://sebraestartups.com.br/"},
@@ -41,6 +42,26 @@ FONTES = [
 HEADERS = {
     "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36"
 }
+
+TERMOS_URL_BLOQUEADOS = (
+    "legacy.",
+    "area-para-clientes",
+    "/login",
+    "signin",
+    "autenticacao",
+    "sso.",
+    "mailto:",
+    "javascript:",
+    "instagram.com",
+    "facebook.com",
+    "twitter.com",
+    "x.com/",
+    "linkedin.com/company",
+    "youtube.com",
+    "whatsapp.com",
+)
+
+EXTENSOES_BLOQUEADAS = (".jpg", ".jpeg", ".png", ".gif", ".svg", ".css", ".js", ".webp", ".ico")
 
 
 def extrair_texto_link(tag_a):
@@ -56,6 +77,49 @@ def extrair_texto_link(tag_a):
         if len(alt) >= 14:
             return alt
     return texto
+
+
+def url_permitida(href):
+    low = href.lower()
+    if not low.startswith("http"):
+        return False
+    if any(b in low for b in TERMOS_URL_BLOQUEADOS):
+        return False
+    if any(low.split("?")[0].endswith(ext) for ext in EXTENSOES_BLOQUEADAS):
+        return False
+    return True
+
+
+def link_esta_ativo(url):
+    if not url_permitida(url):
+        return False
+    try:
+        resp = requests.get(url, headers=HEADERS, timeout=15, verify=False, allow_redirects=True)
+        if resp.status_code in (404, 410, 500, 502, 503, 504):
+            print(f"Descartado (HTTP {resp.status_code}): {url}")
+            return False
+        url_final = (resp.url or "").lower()
+        if any(b in url_final for b in ("legacy.", "area-para-clientes", "/login")):
+            print(f"Descartado (redirecionou para área restrita/legada): {url_final}")
+            return False
+        corpo = (resp.text or "")[:10000].lower()
+        sinais_indisponivel = (
+            "sistema em manutenção",
+            "sistema em manutencao",
+            "site em manutenção",
+            "site em manutencao",
+            "página não encontrada",
+            "pagina nao encontrada",
+            "404 not found",
+            "page not found",
+        )
+        if any(s in corpo for s in sinais_indisponivel):
+            print(f"Descartado (em manutenção / não encontrada): {url}")
+            return False
+        return True
+    except Exception as e:
+        print(f"Descartado (falha ao abrir {url}): {e}")
+        return False
 
 
 def coletar_links_brutos():
@@ -77,9 +141,7 @@ def coletar_links_brutos():
                     continue
 
                 href = urljoin(fonte["url"], a["href"].strip())
-                if not href.startswith("http") or href in vistos:
-                    continue
-                if any(href.lower().endswith(ext) for ext in (".jpg", ".jpeg", ".png", ".gif", ".svg", ".css", ".js")):
+                if not url_permitida(href) or href in vistos:
                     continue
 
                 vistos.add(href)
@@ -135,7 +197,7 @@ def filtrar_sem_ia(itens_brutos):
             "aceleração", "aceleracao", "incubação", "incubacao", "hackathon",
             "pitch", "subvenção", "subvencao", "fomento", "ideação", "ideacao",
             "ideias inovadoras", "catalisa", "liga jovem", "propriedade intelectual",
-            "chamada pública", "chamada publica", "inovativa", "sebrae"
+            "chamada pública", "chamada publica", "inovativa", "sebrae", "tecnologia"
         ],
         "Editais": ["edital", "seleção", "selecao", "monitoria", "estágio", "estagio", "inscrições", "inscricoes", "processo seletivo", "pibic", "extensão", "extensao"],
         "Bolsas": ["bolsa", "auxílio", "auxilio", "pesquisa", "residência", "residencia"],
@@ -156,10 +218,11 @@ def filtrar_sem_ia(itens_brutos):
         if categoria or item["fonte"] == "Sympla Petrolina":
             slug = re.sub(r"[^a-z0-9]+", "-", titulo_low)[:40].strip("-") or "item"
             local_padrao = "Pernambuco / Online" if item.get("foco") == "inovacao" else "Petrolina - PE"
+            nome_inst = item["fonte"].replace(" Geral", "").replace(" Portal", "").replace(" Editais", "").replace(" Notícias", "").replace("Sympla Petrolina", "Evento Local")
             aprovados.append({
                 "id": f"{slug}-{idx}",
                 "titulo": item["titulo_bruto"],
-                "instituicao": item["fonte"].replace(" Geral", "").replace(" Portal", "").replace("Sympla Petrolina", "Evento Local"),
+                "instituicao": nome_inst,
                 "rede": item["rede"],
                 "categoria": categoria or "Eventos",
                 "data": hoje,
@@ -171,7 +234,7 @@ def filtrar_sem_ia(itens_brutos):
                 "descricao": f"Oportunidade coletada automaticamente em {item['fonte']}.",
                 "fonte": item["fonte"]
             })
-    return aprovados[:30]
+    return aprovados[:25]
 
 
 def estruturar_com_ia(itens_brutos):
@@ -185,7 +248,7 @@ def estruturar_com_ia(itens_brutos):
 Você é o curador do aplicativo UniWork (iniciativa da liga acadêmica INOVA ADM), focado em estudantes universitários de Petrolina-PE, Juazeiro-BA e Pernambuco.
 Hoje é {hoje}.
 
-Analise a lista bruta de links coletados abaixo e FILTRE APENAS o que for realmente útil para estudantes e jovens empreendedores:
+Analise a lista bruta de links coletados abaixo e selecione entre 10 e 25 oportunidades REAIS e úteis para estudantes e jovens empreendedores (não se limite a 5 itens se houver mais opções boas):
 - Inovação: editais de fomento para ideias inovadoras, subvenção econômica, programas de pré-aceleração, aceleração, incubação, desafios de startups, hackathons, competições de pitch, Programa Centelha, Catalisa, chamadas da FACEPE, Finep, Sebrae Startups e editais de inovação universitária.
 - Editais: monitoria, PIBIC, extensão, estágios, processos seletivos, residência pedagógica.
 - Bolsas: bolsas de pesquisa, extensão, auxílio estudantil ou fomento individual.
@@ -194,8 +257,9 @@ Analise a lista bruta de links coletados abaixo e FILTRE APENAS o que for realme
 - Minicursos: oficinas, workshops e capacitações.
 
 REGRAS IMPORTANTES:
-1. Priorize fortemente oportunidades classificadas como "Inovação" quando houver links de fomento, startups, desafios, hackathons, FACEPE, Finep, Centelha ou Sebrae.
-2. DESCARTE notícias genéricas, reuniões administrativas, notas de pesar, política partidária ou links institucionais vazios (como "Quem somos", "Contato", "Fale conosco").
+1. Inclua várias oportunidades na categoria "Inovação" sempre que houver links válidos de FACEPE, Finep, Centelha, Sebrae ou desafios/programas de empreendedorismo.
+2. DESCARTE notícias genéricas, reuniões administrativas, notas de pesar, política partidária, páginas de login/sistema interno ou links institucionais vazios ("Quem somos", "Contato", "Transparência").
+3. NUNCA altere nem invente URLs: copie exatamente o campo "link" fornecido na entrada.
 
 Retorne EXCLUSIVAMENTE um JSON válido (uma lista de objetos), sem texto antes ou depois, seguindo exatamente este formato:
 [
@@ -217,7 +281,7 @@ Retorne EXCLUSIVAMENTE um JSON válido (uma lista de objetos), sem texto antes o
 ]
 
 Dados brutos:
-{json.dumps(itens_brutos[:90], ensure_ascii=False)}
+{json.dumps(itens_brutos[:100], ensure_ascii=False)}
 """
 
     modelos = listar_modelos_flash(client)
@@ -264,13 +328,25 @@ Dados brutos:
 def main():
     brutos = coletar_links_brutos()
     print(f"Total de links brutos coletados: {len(brutos)}")
-    itens = estruturar_com_ia(brutos)
-    print(f"Itens aprovados: {len(itens)}")
+    candidatos = estruturar_com_ia(brutos)
+    print(f"Itens retornados pela curadoria: {len(candidatos)}")
+
+    itens_validos = []
+    links_vistos = set()
+    for item in candidatos:
+        link = (item.get("link") or "").strip()
+        if not link or link in links_vistos:
+            continue
+        if link_esta_ativo(link):
+            links_vistos.add(link)
+            itens_validos.append(item)
+
+    print(f"Itens validados com link ativo: {len(itens_validos)}")
 
     agora = datetime.now(timezone(timedelta(hours=-3))).isoformat(timespec="seconds")
     resultado = {
         "ultima_atualizacao": agora,
-        "itens": itens
+        "itens": itens_validos
     }
 
     with open("dados.json", "w", encoding="utf-8") as f:
