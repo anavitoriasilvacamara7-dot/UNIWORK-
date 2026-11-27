@@ -4,6 +4,7 @@ import re
 import socket
 import time
 from datetime import datetime, timezone, timedelta
+from urllib.parse import urljoin
 import requests
 import urllib3
 from bs4 import BeautifulSoup
@@ -19,50 +20,92 @@ except Exception:
     pass
 
 FONTES = [
-    {"nome": "UNIVASF", "rede": "Pública", "url": "https://portais.univasf.edu.br/noticias"},
-    {"nome": "IF Sertão-PE", "rede": "Pública", "url": "https://www.ifsertao-pe.edu.br/"},
-    {"nome": "UPE Petrolina", "rede": "Pública", "url": "https://www.upe.br/petrolina/"},
-    {"nome": "UPE Geral", "rede": "Pública", "url": "https://www.upe.br/"},
-    {"nome": "FACAPE", "rede": "Pública", "url": "http://www.facape.br/"},
-    {"nome": "UNEB", "rede": "Pública", "url": "https://portal.uneb.br/"},
-    {"nome": "Sympla Petrolina", "rede": "Privada", "url": "https://www.sympla.com.br/eventos/petrolina-pe"},
+    # Portais acadêmicos do Vale do São Francisco
+    {"nome": "UNIVASF", "rede": "Pública", "foco": "academico", "url": "https://portais.univasf.edu.br/noticias"},
+    {"nome": "UNIVASF Portal", "rede": "Pública", "foco": "academico", "url": "https://portais.univasf.edu.br/"},
+    {"nome": "IF Sertão-PE", "rede": "Pública", "foco": "academico", "url": "https://www.ifsertao-pe.edu.br/"},
+    {"nome": "UPE Petrolina", "rede": "Pública", "foco": "academico", "url": "https://www.upe.br/petrolina/"},
+    {"nome": "UPE Geral", "rede": "Pública", "foco": "academico", "url": "https://www.upe.br/"},
+    {"nome": "FACAPE", "rede": "Pública", "foco": "academico", "url": "http://www.facape.br/"},
+    {"nome": "UNEB", "rede": "Pública", "foco": "academico", "url": "https://portal.uneb.br/"},
+    {"nome": "Sympla Petrolina", "rede": "Privada", "foco": "academico", "url": "https://www.sympla.com.br/eventos/petrolina-pe"},
+
+    # Portais de inovação, fomento e ideias inovadoras
+    {"nome": "FACEPE", "rede": "Pública", "foco": "inovacao", "url": "https://www.facepe.br/editais/"},
+    {"nome": "Finep", "rede": "Pública", "foco": "inovacao", "url": "http://www.finep.gov.br/chamadas-publicas"},
+    {"nome": "Programa Centelha", "rede": "Pública", "foco": "inovacao", "url": "https://programacentelha.com.br/"},
+    {"nome": "Sebrae Startups", "rede": "Privada", "foco": "inovacao", "url": "https://sebraestartups.com.br/"},
+    {"nome": "Sebrae PE", "rede": "Privada", "foco": "inovacao", "url": "https://sebrae.com.br/sites/PortalSebrae/ufs/pe"},
 ]
 
 HEADERS = {
-    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36"
 }
 
 
+def extrair_texto_link(tag_a):
+    texto = " ".join(tag_a.get_text().split())
+    if len(texto) >= 14:
+        return texto
+    titulo = (tag_a.get("title") or "").strip()
+    if len(titulo) >= 14:
+        return titulo
+    img = tag_a.find("img", alt=True)
+    if img:
+        alt = " ".join((img.get("alt") or "").split())
+        if len(alt) >= 14:
+            return alt
+    return texto
+
+
 def coletar_links_brutos():
-    coletados = []
+    por_fonte = []
     for fonte in FONTES:
+        itens_fonte = []
         try:
             resp = requests.get(fonte["url"], headers=HEADERS, timeout=20, verify=False)
             resp.raise_for_status()
             soup = BeautifulSoup(resp.text, "html.parser")
+
+            for tag in soup.find_all(["nav", "footer", "script", "style", "noscript"]):
+                tag.decompose()
+
             vistos = set()
             for a in soup.find_all("a", href=True):
-                texto = " ".join(a.get_text().split())
-                href = a["href"]
-                if len(texto) < 25 or len(texto) > 180:
+                texto = extrair_texto_link(a)
+                if len(texto) < 14 or len(texto) > 200:
                     continue
-                if href.startswith("/"):
-                    base = "/".join(fonte["url"].split("/")[:3])
-                    href = base + href
+
+                href = urljoin(fonte["url"], a["href"].strip())
                 if not href.startswith("http") or href in vistos:
                     continue
+                if any(href.lower().endswith(ext) for ext in (".jpg", ".jpeg", ".png", ".gif", ".svg", ".css", ".js")):
+                    continue
+
                 vistos.add(href)
-                coletados.append({
+                itens_fonte.append({
                     "fonte": fonte["nome"],
                     "rede": fonte["rede"],
+                    "foco": fonte["foco"],
                     "titulo_bruto": texto,
                     "link": href
                 })
-                if len(vistos) >= 15:
+                if len(itens_fonte) >= 20:
                     break
-            print(f"{fonte['nome']}: {len(vistos)} links coletados")
+
+            print(f"{fonte['nome']}: {len(itens_fonte)} links coletados")
         except Exception as e:
             print(f"Aviso: não foi possível ler {fonte['nome']}: {e}")
+
+        if itens_fonte:
+            por_fonte.append(itens_fonte)
+
+    coletados = []
+    max_rodadas = max((len(lst) for lst in por_fonte), default=0)
+    for idx in range(max_rodadas):
+        for lst in por_fonte:
+            if idx < len(lst):
+                coletados.append(lst[idx])
     return coletados
 
 
@@ -87,11 +130,18 @@ def listar_modelos_flash(client):
 def filtrar_sem_ia(itens_brutos):
     hoje = datetime.now(timezone(timedelta(hours=-3))).strftime("%Y-%m-%d")
     palavras = {
+        "Inovação": [
+            "inovação", "inovacao", "startup", "empreendedorismo", "centelha",
+            "aceleração", "aceleracao", "incubação", "incubacao", "hackathon",
+            "pitch", "subvenção", "subvencao", "fomento", "ideação", "ideacao",
+            "ideias inovadoras", "catalisa", "liga jovem", "propriedade intelectual",
+            "chamada pública", "chamada publica", "inovativa", "sebrae"
+        ],
         "Editais": ["edital", "seleção", "selecao", "monitoria", "estágio", "estagio", "inscrições", "inscricoes", "processo seletivo", "pibic", "extensão", "extensao"],
-        "Bolsas": ["bolsa", "auxílio", "auxilio", "fomento", "pesquisa"],
-        "Simpósios": ["simpósio", "simposio", "congresso", "semana", "jornada", "seminário", "seminario", "encontro", "fórum", "forum"],
+        "Bolsas": ["bolsa", "auxílio", "auxilio", "pesquisa", "residência", "residencia"],
+        "Simpósios": ["simpósio", "simposio", "congresso", "semana", "jornada", "seminário", "seminario", "encontro", "fórum", "forum", "scientex"],
         "Minicursos": ["minicurso", "oficina", "curso", "workshop", "capacitação", "capacitacao", "treinamento"],
-        "Eventos": ["evento", "palestra", "hackathon", "mesa-redonda", "feira", "mostra", "aula inaugural"]
+        "Eventos": ["evento", "palestra", "mesa-redonda", "feira", "mostra", "aula inaugural"]
     }
     aprovados = []
     for idx, item in enumerate(itens_brutos, start=1):
@@ -101,24 +151,27 @@ def filtrar_sem_ia(itens_brutos):
             if any(t in titulo_low for t in termos):
                 categoria = cat
                 break
+        if not categoria and item.get("foco") == "inovacao":
+            categoria = "Inovação"
         if categoria or item["fonte"] == "Sympla Petrolina":
             slug = re.sub(r"[^a-z0-9]+", "-", titulo_low)[:40].strip("-") or "item"
+            local_padrao = "Pernambuco / Online" if item.get("foco") == "inovacao" else "Petrolina - PE"
             aprovados.append({
                 "id": f"{slug}-{idx}",
                 "titulo": item["titulo_bruto"],
-                "instituicao": item["fonte"].replace(" Geral", "").replace("Sympla Petrolina", "Evento Local"),
+                "instituicao": item["fonte"].replace(" Geral", "").replace(" Portal", "").replace("Sympla Petrolina", "Evento Local"),
                 "rede": item["rede"],
                 "categoria": categoria or "Eventos",
                 "data": hoje,
-                "prazo": "Consultar no link",
-                "local": "Petrolina - PE",
-                "beneficio": "Ver detalhes no site",
-                "requisitos": "Estudantes universitários",
+                "prazo": "Consultar no portal",
+                "local": local_padrao,
+                "beneficio": "Fomento / Apoio" if categoria == "Inovação" else "Ver detalhes no site",
+                "requisitos": "Estudantes e empreendedores" if categoria == "Inovação" else "Estudantes universitários",
                 "link": item["link"],
                 "descricao": f"Oportunidade coletada automaticamente em {item['fonte']}.",
                 "fonte": item["fonte"]
             })
-    return aprovados[:25]
+    return aprovados[:30]
 
 
 def estruturar_com_ia(itens_brutos):
@@ -129,29 +182,33 @@ def estruturar_com_ia(itens_brutos):
     hoje = datetime.now(timezone(timedelta(hours=-3))).strftime("%Y-%m-%d")
 
     prompt = f"""
-Você é o curador do aplicativo UniWork, focado em estudantes universitários de Petrolina-PE e Juazeiro-BA.
+Você é o curador do aplicativo UniWork (iniciativa da liga acadêmica INOVA ADM), focado em estudantes universitários de Petrolina-PE, Juazeiro-BA e Pernambuco.
 Hoje é {hoje}.
 
-Analise a lista bruta de links coletados abaixo e FILTRE APENAS o que for útil para estudantes:
-- Editais (monitoria, PIBIC, extensão, bolsas, estágios, seleção, auxílio)
-- Simpósios, congressos, jornadas, semanas acadêmicas
-- Eventos universitários, palestras, hackathons
-- Minicursos e oficinas
+Analise a lista bruta de links coletados abaixo e FILTRE APENAS o que for realmente útil para estudantes e jovens empreendedores:
+- Inovação: editais de fomento para ideias inovadoras, subvenção econômica, programas de pré-aceleração, aceleração, incubação, desafios de startups, hackathons, competições de pitch, Programa Centelha, Catalisa, chamadas da FACEPE, Finep, Sebrae Startups e editais de inovação universitária.
+- Editais: monitoria, PIBIC, extensão, estágios, processos seletivos, residência pedagógica.
+- Bolsas: bolsas de pesquisa, extensão, auxílio estudantil ou fomento individual.
+- Simpósios: congressos, semanas acadêmicas, Scientex, jornadas, seminários e fóruns.
+- Eventos: palestras, feiras, mesas-redondas e encontros universitários.
+- Minicursos: oficinas, workshops e capacitações.
 
-DESCARTE notícias genéricas, reuniões de reitoria, notas de pesar, avisos administrativos ou links institucionais vazios.
+REGRAS IMPORTANTES:
+1. Priorize fortemente oportunidades classificadas como "Inovação" quando houver links de fomento, startups, desafios, hackathons, FACEPE, Finep, Centelha ou Sebrae.
+2. DESCARTE notícias genéricas, reuniões administrativas, notas de pesar, política partidária ou links institucionais vazios (como "Quem somos", "Contato", "Fale conosco").
 
 Retorne EXCLUSIVAMENTE um JSON válido (uma lista de objetos), sem texto antes ou depois, seguindo exatamente este formato:
 [
   {{
     "id": "slug-unico-curto",
     "titulo": "Título claro e atrativo",
-    "instituicao": "UNIVASF | UPE Petrolina | IF Sertão-PE | FACAPE | UNINASSAU | Estácio | UNEB",
+    "instituicao": "UNIVASF | UPE Petrolina | IF Sertão-PE | FACAPE | UNEB | FACEPE | Finep | Sebrae | Programa Centelha | Evento Local",
     "rede": "Pública | Privada",
-    "categoria": "Editais | Simpósios | Eventos | Minicursos | Bolsas",
+    "categoria": "Inovação | Editais | Simpósios | Eventos | Minicursos | Bolsas",
     "data": "YYYY-MM-DD (use a data do evento/prazo se inferível, senão {hoje})",
-    "prazo": "Ex: Inscrições abertas ou Até DD/MM",
-    "local": "Ex: Petrolina - PE ou Online",
-    "beneficio": "Ex: Certificado, Bolsa, Gratuito ou Acesso livre",
+    "prazo": "Ex: Inscrições abertas, Até DD/MM ou Consulte o edital",
+    "local": "Ex: Petrolina - PE, Pernambuco ou Online",
+    "beneficio": "Ex: Fomento, Mentoria, Certificado, Bolsa ou Gratuito",
     "requisitos": "Resumo curto de quem pode participar",
     "link": "URL exata fornecida na entrada",
     "descricao": "Resumo objetivo em 1 ou 2 frases.",
@@ -160,7 +217,7 @@ Retorne EXCLUSIVAMENTE um JSON válido (uma lista de objetos), sem texto antes o
 ]
 
 Dados brutos:
-{json.dumps(itens_brutos[:70], ensure_ascii=False)}
+{json.dumps(itens_brutos[:90], ensure_ascii=False)}
 """
 
     modelos = listar_modelos_flash(client)
